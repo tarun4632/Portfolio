@@ -205,7 +205,7 @@ export default function App() {
             </div>
 
             {/* Description */}
-            <p className="text-zinc-400 text-base max-w-lg leading-relaxed">
+            <p className="text-zinc-400 text-[17px] max-w-lg leading-relaxed">
               Building Scalable AI Pipelines and Real-Time Architectures. Transforming complex data into high-performance systems.
             </p>
 
@@ -300,7 +300,7 @@ export default function App() {
                   Colonist Strategic Profile
                 </h3>
               </div>
-              <p className="text-xs text-zinc-500">
+              <p className="text-sm text-zinc-500">
                 Competitive analytics &amp; game-theoretic decision metrics.
               </p>
             </div>
@@ -345,18 +345,18 @@ export default function App() {
                   <h4 className="font-display font-black text-xl text-white tracking-wide">
                     Naor4242
                   </h4>
-                  <p className="text-xs font-mono text-zinc-400 flex items-center justify-center lg:justify-start gap-1.5">
+                  <p className="text-sm font-mono text-zinc-400 flex items-center justify-center lg:justify-start gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     Karma Status: <span className="text-emerald-400 font-bold">10 / 10 Excellent</span>
                   </p>
                 </div>
 
                 <div className="pt-2 w-full">
-                  <div className="flex justify-between text-xs py-1.5 border-b border-zinc-900/50">
+                  <div className="flex justify-between text-sm py-1.5 border-b border-zinc-900/50">
                     <span className="text-zinc-500">Fav Color:</span>
                     <span className="text-orange-500 font-bold uppercase tracking-wider">Orange</span>
                   </div>
-                  <div className="flex justify-between text-xs py-1.5 border-b border-zinc-900/50">
+                  <div className="flex justify-between text-sm py-1.5 border-b border-zinc-900/50">
                     <span className="text-zinc-500">Style:</span>
                     <span className="text-white font-semibold">Ore-Wheat-Sheep Build</span>
                   </div>
@@ -435,7 +435,7 @@ export default function App() {
                 Project Repository
               </h3>
             </div>
-            <p className="text-xs text-zinc-500">
+            <p className="text-sm text-zinc-500">
               Inventory of deployed systems and AI models. Click any card to inspect the codebase on GitHub.
             </p>
           </div>
@@ -448,7 +448,7 @@ export default function App() {
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative bg-zinc-950/40 border border-white/5 backdrop-blur-lg hover:border-amber-500/40 rounded-lg p-5 flex flex-col justify-between h-48 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 cursor-pointer"
+                className="group relative bg-zinc-950/40 border border-white/5 backdrop-blur-lg hover:border-amber-500/40 rounded-lg p-5 flex flex-col justify-between min-h-[12.5rem] h-auto transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 cursor-pointer"
               >
                 {/* Header Icon */}
                 <div className="flex justify-between items-start">
@@ -466,10 +466,10 @@ export default function App() {
 
                 {/* Details */}
                 <div className="space-y-1">
-                  <h4 className="font-display font-semibold text-white group-hover:text-amber-500 transition-colors text-sm tracking-wide">
+                  <h4 className="font-display font-semibold text-white group-hover:text-amber-500 transition-colors text-[15px] tracking-wide">
                     {project.title}
                   </h4>
-                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                  <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed">
                     {project.description}
                   </p>
                 </div>
@@ -496,7 +496,7 @@ export default function App() {
                 Strategic Stack
               </h3>
             </div>
-            <p className="text-xs text-zinc-500">
+            <p className="text-sm text-zinc-500">
               Core technologies and tactical specializations.
             </p>
           </div>
@@ -506,7 +506,7 @@ export default function App() {
             {SKILL_CATEGORIES.map((category) => (
               <div key={category.title} className="space-y-2">
                 {/* Category label */}
-                <h4 className="text-[10px] font-mono font-bold tracking-widest text-zinc-500 uppercase">
+                <h4 className="text-xs font-mono font-bold tracking-widest text-zinc-500 uppercase">
                   {category.title}
                 </h4>
 
@@ -515,7 +515,7 @@ export default function App() {
                   {category.items.map((skill) => (
                     <div
                       key={skill.name}
-                      className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-950/30 hover:bg-zinc-900/50 border border-white/5 hover:border-amber-500/30 backdrop-blur-sm text-zinc-300 hover:text-white rounded text-xs font-semibold tracking-wide transition-all duration-200 cursor-default"
+                      className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-950/30 hover:bg-zinc-900/50 border border-white/5 hover:border-amber-500/30 backdrop-blur-sm text-zinc-300 hover:text-white rounded text-[13px] font-semibold tracking-wide transition-all duration-200 cursor-default"
                     >
                       <ChevronRight className="w-3 h-3 text-amber-500 group-hover:translate-x-0.5 transition-transform" />
                       <span>{skill.name}</span>
@@ -537,7 +537,7 @@ export default function App() {
                 Engineering Experience
               </h3>
             </div>
-            <p className="text-xs text-zinc-500">
+            <p className="text-sm text-zinc-500">
               Professional deployments and operational history.
             </p>
           </div>
@@ -557,10 +557,10 @@ export default function App() {
                   {/* Title & Badge */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
                     <div>
-                      <h4 className="font-display font-bold text-base text-white tracking-wide group-hover:text-amber-500 transition-colors">
+                      <h4 className="font-display font-bold text-[17px] text-white tracking-wide group-hover:text-amber-500 transition-colors">
                         {exp.role}
                       </h4>
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400 font-medium">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-zinc-400 font-medium">
                         <span className="text-amber-500 font-semibold">{exp.company}</span>
                         <span className="text-zinc-650">•</span>
                         <span className="inline-flex items-center gap-1">
@@ -580,7 +580,7 @@ export default function App() {
                   </div>
 
                   {/* Bullets */}
-                  <ul className="space-y-2 text-xs text-zinc-400 leading-relaxed list-none">
+                  <ul className="space-y-2 text-sm text-zinc-400 leading-relaxed list-none">
                     {exp.bullets.map((bullet, bIdx) => (
                       <li key={bIdx} className="flex gap-2.5 items-start">
                         <span className="text-amber-500 select-none mt-0.5 font-bold">▪</span>
@@ -601,7 +601,7 @@ export default function App() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 border-b border-zinc-900 pb-2.5">
               <Award className="w-4.5 h-4.5 text-amber-500" />
-              <h4 className="font-display font-bold text-sm tracking-wide text-white uppercase">
+              <h4 className="font-display font-bold text-[15px] tracking-wide text-white uppercase">
                 Achievements
               </h4>
             </div>
@@ -613,8 +613,8 @@ export default function App() {
                   className="p-4 bg-zinc-950/40 border border-white/5 rounded flex items-center justify-between gap-4 hover:border-amber-500/20 backdrop-blur-md transition-colors"
                 >
                   <div className="space-y-0.5 text-left">
-                    <p className="text-xs font-semibold text-white tracking-wide">{ach.title}</p>
-                    <p className="text-[10px] font-mono text-amber-500 uppercase tracking-wider font-bold">{ach.detail}</p>
+                    <p className="text-[13px] font-semibold text-white tracking-wide">{ach.title}</p>
+                    <p className="text-xs font-mono text-amber-500 uppercase tracking-wider font-bold">{ach.detail}</p>
                   </div>
                   <div className="p-1.5 bg-amber-500/5 rounded border border-amber-500/10">
                     <AwardIcon className="w-3.5 h-3.5 text-amber-500" />
@@ -628,7 +628,7 @@ export default function App() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 border-b border-zinc-900 pb-2.5">
               <Users className="w-4.5 h-4.5 text-amber-500" />
-              <h4 className="font-display font-bold text-sm tracking-wide text-white uppercase">
+              <h4 className="font-display font-bold text-[15px] tracking-wide text-white uppercase">
                 Leadership
               </h4>
             </div>
@@ -639,8 +639,8 @@ export default function App() {
                   key={idx}
                   className="p-4 bg-zinc-950/40 border border-white/5 rounded space-y-1 text-left hover:border-amber-500/20 backdrop-blur-md transition-colors"
                 >
-                  <p className="text-xs font-bold text-white tracking-wide">{lead.role} at {lead.organization}</p>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed font-medium">{lead.description}</p>
+                  <p className="text-[13px] font-bold text-white tracking-wide">{lead.role} at {lead.organization}</p>
+                  <p className="text-[13px] text-zinc-400 leading-relaxed font-medium">{lead.description}</p>
                 </div>
               ))}
             </div>
@@ -650,7 +650,7 @@ export default function App() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 border-b border-zinc-900 pb-2.5">
               <Calendar className="w-4.5 h-4.5 text-amber-500" />
-              <h4 className="font-display font-bold text-sm tracking-wide text-white uppercase">
+              <h4 className="font-display font-bold text-[15px] tracking-wide text-white uppercase">
                 Organized Events
               </h4>
             </div>
@@ -664,7 +664,7 @@ export default function App() {
                   rel="noopener noreferrer"
                   className="block p-4 bg-zinc-950/40 border border-white/5 rounded flex items-center justify-between hover:border-amber-500/35 backdrop-blur-md transition-all group cursor-pointer"
                 >
-                  <span className="text-xs font-semibold text-zinc-300 group-hover:text-white transition-colors">
+                  <span className="text-[13px] font-semibold text-zinc-300 group-hover:text-white transition-colors">
                     {event.name}
                   </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
