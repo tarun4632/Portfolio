@@ -1,0 +1,6 @@
+{
+  "name": "Tarun Jain Portfolio",
+  "description": "Interactive system portfolio for Tarun Jain, ML & Systems Engineer. Features real-time interactive shader canvas, skills strategic stack, gaming stats, and experience logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
