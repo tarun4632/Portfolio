@@ -315,18 +315,6 @@ export default function App() {
             </a>
           </div>
 
-          {/* Explanation Banner */}
-          <div className="p-4 bg-zinc-900/30 border border-white/5 backdrop-blur-md rounded-lg space-y-2 text-xs text-zinc-400 leading-relaxed">
-            <h4 className="font-mono text-amber-500 font-bold tracking-wider uppercase text-[10px] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
-              VERIFIED 1v1 RANKED PERFORMANCE
-            </h4>
-            <p>
-              This leaderboard tracks official competitive analytics from <strong className="text-zinc-200">Colonist.io</strong> for high-level <strong className="text-zinc-200">1v1 Duels</strong>.
-              Settlers of Catan 1v1 is a battle of spatial strategy, resource velocity optimization, and rigorous probability modeling.
-              The verified metrics below represent exact high-stakes competitive data.
-            </p>
-          </div>
 
           {/* Gamers Profile Card - Glassmorphic Dashboard */}
           <div className="relative overflow-hidden bg-zinc-950/40 border border-white/10 rounded-xl p-6 md:p-8 shadow-2xl backdrop-blur-lg hover:border-amber-500/20 transition-all duration-300">
