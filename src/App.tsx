@@ -688,7 +688,7 @@ export default function App() {
                 TARUN JAIN
               </span>
               <p className="text-[10px] font-mono text-zinc-500 tracking-wider">
-                © 2024. ALL SYSTEMS NOMINAL.
+                © 2026. ALL SYSTEMS NOMINAL.
               </p>
             </div>
 
