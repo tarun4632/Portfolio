@@ -160,7 +160,7 @@ export default function App() {
               onClick={() => setHireOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-mono text-xs font-bold uppercase tracking-wider rounded transition-colors shadow-lg shadow-amber-500/10 cursor-pointer"
             >
-              <span>HIRE LEAD STRATEGIST</span>
+              <span>GET IN TOUCH</span>
               <Mail className="w-3.5 h-3.5" />
             </button>
             <button

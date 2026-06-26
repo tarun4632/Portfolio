@@ -12,19 +12,55 @@ export default function HireStrategistModal({ isOpen, onClose }: HireStrategistM
   const [email, setEmail] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
 
-    const subject = `Lead Strategist Proposal - ${name}`;
-    const body = `Name: ${name}\nEmail: ${email}\n\nArchitecture Notes:\n${additionalInfo}`;
-    const mailtoUrl = `mailto:tarunjainjain11@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Trigger the email client
-    window.location.href = mailtoUrl;
+    setIsSubmitting(true);
+    setError(null);
 
-    setSubmitted(true);
+    // Try to get Web3Forms Access Key from environment variables
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+
+    if (!accessKey) {
+      setError("Contact configuration missing (VITE_WEB3FORMS_ACCESS_KEY is not defined).");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `🤝 [Collaboration/Hire Message] from ${name}`,
+          from_name: "Tarun Jain Portfolio",
+          replyto: email,
+          "Client Name": name,
+          "Contact Email": email,
+          "Message / Project Details": additionalInfo,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        setError(result.message || "Failed to send message. Please check configuration.");
+      }
+    } catch (err) {
+      console.error("Web3Forms submission error:", err);
+      setError("Network error. Please check your internet connection.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -44,7 +80,7 @@ export default function HireStrategistModal({ isOpen, onClose }: HireStrategistM
             <div className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-b border-zinc-800">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-500" />
-                <span className="font-display font-semibold text-lg tracking-wide text-zinc-100">Hire Lead Strategist</span>
+                <span className="font-display font-semibold text-lg tracking-wide text-zinc-100">Work &amp; Collaborate</span>
               </div>
               <button
                 onClick={onClose}
@@ -60,7 +96,7 @@ export default function HireStrategistModal({ isOpen, onClose }: HireStrategistM
               {!submitted ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <p className="text-sm text-zinc-400 leading-relaxed">
-                    Collaborate with Tarun Jain to design and deploy high-performance computer vision pipelines, custom RAG pipelines, or high-throughput real-time distributed backends.
+                    I'm an aspiring ML and Systems Engineer passionate about computer vision, custom AI pipelines, and efficient backend architectures. Reach out for internships, project collaborations, or just to say hello!
                   </p>
 
                   <div className="space-y-1">
@@ -93,23 +129,34 @@ export default function HireStrategistModal({ isOpen, onClose }: HireStrategistM
 
                   <div className="space-y-1">
                     <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                      Architecture Notes
+                      Message &amp; Project Details
                     </label>
                     <textarea
                       rows={4}
                       value={additionalInfo}
                       onChange={(e) => setAdditionalInfo(e.target.value)}
-                      placeholder="Brief description of database requirements or processing constraints..."
+                      placeholder="Tell me about your project idea, internship opportunity, or collaboration notes..."
                       className="w-full bg-zinc-900/60 border border-zinc-800 focus:border-amber-500 rounded px-3 py-2 text-sm text-zinc-100 outline-none resize-none transition-all"
                     />
                   </div>
 
+                  {error && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded font-mono">
+                      {error}
+                    </div>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-semibold rounded-md flex items-center justify-center gap-2 text-sm transition-colors cursor-pointer"
+                    disabled={isSubmitting}
+                    className={`w-full py-3 font-semibold rounded-md flex items-center justify-center gap-2 text-sm transition-colors cursor-pointer ${
+                      isSubmitting
+                        ? "bg-amber-500/50 text-zinc-950/70 cursor-not-allowed"
+                        : "bg-amber-500 hover:bg-amber-600 text-zinc-950"
+                    }`}
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Send Project Proposal</span>
+                    <Send className={`w-4 h-4 ${isSubmitting ? "animate-pulse" : ""}`} />
+                    <span>{isSubmitting ? "Sending Message..." : "Send Message"}</span>
                   </button>
                 </form>
               ) : (
@@ -122,12 +169,12 @@ export default function HireStrategistModal({ isOpen, onClose }: HireStrategistM
                     <CheckCircle className="w-10 h-10" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="font-display font-bold text-xl text-zinc-100">Proposal Transmission Complete</h3>
+                    <h3 className="font-display font-bold text-xl text-zinc-100">Message Transmitted</h3>
                     <p className="text-sm text-zinc-400">
-                      Thank you, <b className="text-zinc-200">{name}</b>. Your system architecture specifications have been prepared.
+                      Thank you, <b className="text-zinc-200">{name}</b>. Your message was sent successfully.
                     </p>
                     <p className="text-xs text-zinc-500">
-                      If your mail client didn't open automatically, please send your notes directly to <b className="text-zinc-400">tarunjainjain11@gmail.com</b>.
+                      I'll get back to you at <b className="text-zinc-400">{email}</b> as soon as possible!
                     </p>
                   </div>
                   <button
@@ -137,7 +184,7 @@ export default function HireStrategistModal({ isOpen, onClose }: HireStrategistM
                     }}
                     className="mt-6 px-6 py-2 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-200 text-xs rounded transition-colors"
                   >
-                    Return to Blueprint
+                    Return to Portfolio
                   </button>
                 </motion.div>
               )}
