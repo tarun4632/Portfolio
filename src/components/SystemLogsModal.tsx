@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Terminal, Cpu, HardDrive, Shield, Wifi } from 'lucide-react';
+import { X, Terminal, Cpu, HardDrive, Gauge, Wifi } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface SystemLogsModalProps {
@@ -29,8 +29,82 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
   const [ramUsage, setRamUsage] = useState(4.2);
   const [inputValue, setInputValue] = useState('');
   const [isBooted, setIsBooted] = useState(false);
+  const [ping, setPing] = useState<number | string>('...');
+  const [speed, setSpeed] = useState<string>('...');
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [tempDraft, setTempDraft] = useState('');
   const terminalEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Measure Real Network Ping (Round-Trip Latency)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const measurePing = async () => {
+      try {
+        const start = performance.now();
+        // Fetch root with a cache-buster query parameter to force round-trip
+        await fetch('/?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+        const end = performance.now();
+        const latency = Math.round(end - start);
+        console.log(`[Telemetry] Real ping measured: ${latency}ms`);
+        setPing(latency);
+      } catch (e) {
+        console.warn("[Telemetry] Latency check failed, using fallback 12ms", e);
+        setPing(12); // Fallback ping in ms
+      }
+    };
+
+    measurePing();
+    const interval = setInterval(measurePing, 5000);
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
+  // Measure Real Download Speed from a remote CDN
+  const measureSpeed = async () => {
+    try {
+      const start = performance.now();
+      // Fetch a small JS library from Cloudflare CDN with cache busting to test raw bandwidth
+      const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js?cb=' + Date.now(), {
+        cache: 'no-store'
+      });
+      
+      if (!response.ok) throw new Error("CDN speed test request failed");
+      
+      const blob = await response.blob();
+      const end = performance.now();
+      const durationSec = (end - start) / 1000;
+      
+      if (durationSec > 0) {
+        const sizeInBits = blob.size * 8;
+        const speedMbps = (sizeInBits / durationSec) / (1000 * 1000);
+        
+        // Show a realistic float format for network telemetry
+        const formatted = `${speedMbps.toFixed(1)}Mbps`;
+        console.log(`[Telemetry] Real speed test completed: ${formatted} (${blob.size} bytes in ${durationSec.toFixed(3)}s)`);
+        setSpeed(formatted);
+        return formatted;
+      }
+    } catch (e) {
+      console.warn("[Telemetry] Real speed test failed, using fallback connection details", e);
+      const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      let fallbackVal = '4G (15Mbps)';
+      if (conn) {
+        const type = conn.effectiveType ? conn.effectiveType.toUpperCase() : 'NET';
+        const downlink = conn.downlink ? `${conn.downlink}Mbps` : '15Mbps';
+        fallbackVal = `${type} (${downlink})`;
+      }
+      setSpeed(fallbackVal);
+      return fallbackVal;
+    }
+    return '4G (15Mbps)';
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    measureSpeed();
+  }, [isOpen]);
 
   // Simulate log typing
   useEffect(() => {
@@ -71,6 +145,40 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
+  // Handle command history navigation using Up/Down arrow keys
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (history.length === 0) return;
+
+      let newIndex = historyIndex;
+      if (historyIndex === -1) {
+        setTempDraft(inputValue);
+        newIndex = history.length - 1;
+      } else if (historyIndex > 0) {
+        newIndex = historyIndex - 1;
+      } else {
+        return; // Reach the oldest command
+      }
+
+      setHistoryIndex(newIndex);
+      setInputValue(history[newIndex]);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex === -1) return;
+
+      let newIndex = historyIndex + 1;
+      if (newIndex < history.length) {
+        setHistoryIndex(newIndex);
+        setInputValue(history[newIndex]);
+      } else {
+        // Back to the original draft text
+        setHistoryIndex(-1);
+        setInputValue(tempDraft);
+      }
+    }
+  };
+
   const handleCommandSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanInput = inputValue.trim();
@@ -82,6 +190,31 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
     // 1. Add the user's input line to the log
     setLogs((prev) => [...prev, `${timeStr} ROOT@TARUN-SYS-NODE:~# ${cleanInput}`]);
     setInputValue('');
+
+    // Add command to history (excluding duplicate consecutive entries)
+    setHistory((prev) => {
+      if (prev.length > 0 && prev[prev.length - 1] === cleanInput) {
+        return prev;
+      }
+      return [...prev, cleanInput];
+    });
+    setHistoryIndex(-1);
+    setTempDraft('');
+
+    // If it is a speedtest command, execute the measurement asynchronously
+    if (cmd === 'speedtest') {
+      setLogs((prev) => [...prev, `${timeStr} [SYSTEM] Initializing network download test to Cloudflare edge...`]);
+      setTimeout(async () => {
+        const resultVal = await measureSpeed();
+        const finishTime = new Date().toLocaleTimeString();
+        setLogs((prev) => [
+          ...prev,
+          `${finishTime} [SYSTEM] Speed test complete. Value: ${resultVal}`,
+          `${finishTime} [SYSTEM] Telemetry dashboard bandwidth sync successful.`
+        ]);
+      }, 150);
+      return;
+    }
 
     // 2. Process commands with a slight simulated system latency
     setTimeout(() => {
@@ -96,6 +229,7 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
             `  neofetch  - Display system specs & technical profile`,
             `  stats     - Show core portfolio metrics`,
             `  ping      - Run network diagnostic latency test`,
+            `  speedtest - Run manual download bandwidth speed test`,
             `  clear     - Clear terminal buffer`,
             `  help      - Display this help documentation`
           ];
@@ -143,15 +277,17 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
             `  - Colonist Rank: Gold I (win rate 53.7%)`
           ];
           break;
-        case 'ping':
+        case 'ping': {
+          const latencyVal = typeof ping === 'number' ? `${ping}.0` : '12.4';
           response = [
             `[NETWORK] PING google.com (142.250.190.46): 56 data bytes`,
-            `  64 bytes from 142.250.190.46: icmp_seq=1 ttl=116 time=11.8 ms`,
-            `  64 bytes from 142.250.190.46: icmp_seq=2 ttl=116 time=12.4 ms`,
+            `  64 bytes from 142.250.190.46: icmp_seq=1 ttl=116 time=${latencyVal} ms`,
+            `  64 bytes from 142.250.190.46: icmp_seq=2 ttl=116 time=${(parseFloat(latencyVal) + 0.6).toFixed(1)} ms`,
             `[NETWORK] --- google.com ping stats ---`,
             `  2 packets transmitted, 2 received, 0% packet loss`
           ];
           break;
+        }
         case 'clear':
           setLogs([]);
           return;
@@ -207,12 +343,12 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
                 <span>RAM: <b className="text-emerald-300">{ramUsage}GB</b></span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-yellow-400" />
-                <span>FIREWALL: <b className="text-yellow-300">SECURE</b></span>
+                <Gauge className="w-3.5 h-3.5 text-yellow-400" />
+                <span>SPEED: <b className="text-yellow-300">{speed}</b></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Wifi className="w-3.5 h-3.5 text-blue-400" />
-                <span>PING: <b className="text-blue-300">12ms</b></span>
+                <span>PING: <b className="text-blue-300">{typeof ping === 'number' ? `${ping}ms` : ping}</b></span>
               </div>
             </div>
 
@@ -263,6 +399,7 @@ export default function SystemLogsModal({ isOpen, onClose }: SystemLogsModalProp
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="flex-1 bg-transparent border-none outline-none text-cyan-300 font-mono"
                     autoFocus
                     placeholder="type 'help'..."
